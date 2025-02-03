@@ -1,45 +1,48 @@
-// frontend/components/TradingChart.js
-import { useEffect } from "react";
+'use client';
 
+import React, { useEffect, useRef } from 'react';
 
+const TradingChart = ({ symbol = "BINANCE:BTCUSDT", interval = "D" }) => {
+  const container = useRef(null);
 
-const TradingChart = ({ symbol, interval }) => {
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://s3.tradingview.com/tv.js";
+    const script = document.createElement('script');
+    script.src = 'https://s3.tradingview.com/tv.js';
     script.async = true;
     script.onload = () => {
-      new window.TradingView.widget({
-        container_id: "tradingview-chart",
-        autosize: true,
-        symbol: symbol || "BINANCE:BTCUSDT",
-        interval: interval || "D",
-        timezone: "Etc/UTC",
-        theme: "dark",
-        style: "1",
-        locale: "en",
-        toolbar_bg: "#f1f3f6",
-        enable_publishing: false,
-        allow_symbol_change: true,
-        studies: ["RSI@tv-basicstudies"],
-        details: true,
-        hotlist: true,
-        calendar: true,
-        withdateranges: true,
-      });
+      if (typeof TradingView !== 'undefined' && container.current) {
+        new TradingView.widget({
+          "width": "100%",
+          "height": "100%",
+          "symbol": symbol,
+          "interval": interval,
+          "timezone": "Europe/Paris",
+          "theme": "dark",
+          "style": "1",
+          "locale": "fr",
+          "toolbar_bg": "#131722",
+          "enable_publishing": false,
+          "allow_symbol_change": true,
+          "save_image": false,
+          "container_id": container.current.id
+        });
+      }
     };
-    document.body.appendChild(script);
+    document.head.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
     };
   }, [symbol, interval]);
 
   return (
-    <>
-      <div id="tradingview-chart" style={{ height: "500px", width: "100%" }} />
-      <TradingChart symbol="BINANCE:BTCUSDT" interval="D" indicators={["RSI@tv-basicstudies", "MACD@tv-basicstudies"]} />
-    </>
+    <div 
+      id="tradingview_widget"
+      ref={container} 
+      className="tradingview-chart"
+    />
   );
 };
 

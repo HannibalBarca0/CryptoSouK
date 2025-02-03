@@ -1,4 +1,5 @@
 // frontend/components/CustomizableDashboard.js
+'use client';
 import { useState, useEffect } from "react";
 import axios from "axios";
 
